@@ -36,22 +36,16 @@ $ engino -c <db://host:port/> -a appname -t /opt/engino/templates [-r <max resta
 		$ engino -c etcd://127.0.0.1:4001 -t /opt/engino/templates -a myapp
 
 	- redis
-		$ redis-cli hset env db newdb
-		$ redis-cli hset env cache newcache
-		$ redis-cli hset env queue newqueue
-		$ habitat -r 127.0.0.1:6379 env
+		$ redis-cli hset engino template myapp.conf
+		$ redis-cli hset engino backend 127.0.0.1:10000
+		$ redis-cli hset engino servername myapp.localhost
+		$ engino -c redis://127.0.0.1:6379 -a myapp
 
 	- consul
-		$ curl -X PUT -d 'newdb' http://localhost:8500/v1/kv/env/db
-		$ curl -X PUT -d 'newcache' http://localhost:8500/v1/kv/env/cache
-		$ curl -X PUT -d 'newqueue' http://localhost:8500/v1/kv/env/queue
-		$ habitat -c 127.0.0.1:8500 env
-
-	- consul with a different app name
-		$ curl -X PUT -d 'newdb' http://localhost:8500/v1/kv/newapp/db
-		$ curl -X PUT -d 'newcache' http://localhost:8500/v1/kv/newapp/cache
-		$ curl -X PUT -d 'newqueue' http://localhost:8500/v1/kv/newapp/queue
-		$ habitat -k newapp -c 127.0.0.1:8500 env
+		$ curl -X PUT -d 'myapp.conf' http://localhost:8500/v1/kv/myapp/template
+		$ curl -X PUT -d '127.0.0.1:10000' http://localhost:8500/v1/kv/myapp/backend
+		$ curl -X PUT -d 'myapp.localhost' http://localhost:8500/v1/kv/myapp/servername
+		$ engino -c consul://127.0.0.1:8500 -a myapp
 
 	You can mix data coming from all sources too.
 
